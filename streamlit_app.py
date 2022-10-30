@@ -1,6 +1,7 @@
 import streamlit as st
 from snowflake.snowpark import Session
 import pandas as pd
+import snowflake.connector
 #from matplotlib import pyplot as plt
 #import altair as alt
 #from numerize import numerize
