@@ -2,10 +2,10 @@ import streamlit as st
 import pandas as pd
 from snowflake.snowpark import Session
 import datetime
+import altair as alt
 
 st.set_page_config(layout="wide")
-st.title('Uber pickups in NYC')
-
+st.title('Money in Motion Dashboard')
 connection_parameters = {
     "account": st.secrets["snowflake"]["account"],
     "user": st.secrets["snowflake"]["user"],
@@ -22,16 +22,7 @@ payment_type_select = ''
 from_dt = datetime.date.today()
 to_dt = datetime.date.today()
 
-st.title('Money in Motion Dashboard')
-connection_parameters = {
-    "account": "dh04284.ap-southeast-1",
-    "user": "SNOWMINDS",
-    "password": "TeamSF@2022",
-    "role": "FIN_DEVELOPER",
-    "warehouse": "VWH_FIN_TRS",
-    "database": "D_FIN_LND",
-    "schema": "FIN_WBG"
-}
+
 test_session = Session.builder.configs(connection_parameters).create()
 df_table = test_session.sql("SELECT  TYPE_TRAN,SUM(AMOUNT) AS AMOUNT_IN_MILLION from D_FIN_STG.FIN_STG.TRANS_DTA group by 1 ").collect()
 df = pd.DataFrame(df_table)
