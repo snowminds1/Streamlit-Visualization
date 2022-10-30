@@ -6,31 +6,20 @@ import snowflake.connector
 #import altair as alt
 #from numerize import numerize
 
+# [snowflake]
+# user = "snowminds"
+# password = "TestSF@2022"
+# account = "dh04284.ap-southeast-1"
+# warehouse = "VWH_FIN_TRS"
+# database = "D_FIN_LND"
+# schema = "FIN_WBG"
 
-# Initialize connection.
-# Uses st.experimental_singleton to only run once.
-@st.experimental_singleton
-def init_connection():
-    return snowflake.connector.connect(
-        **st.secrets["snowflake"], client_session_keep_alive=True
-    )
+print(st.secrets["snowflake"]["account"])
 
-conn = init_connection()
-
-
-@st.experimental_memo(ttl=600)
-def run_query(query):
-    with conn.cursor() as cur:
-        cur.execute(query)
-        return cur.fetchall()
-
-rows = run_query("SELECT  TYPE_TRAN,SUM(AMOUNT) AS AMOUNT_IN_MILLION from D_FIN_STG.FIN_STG.TRANS_DTA group by 1")
-df = pd.DataFrame(df_table)
-print(df)
-
-#st.title('Uber pickups in NYC')
+# st.secrets["snowflake"]["account"]
+# st.title('Uber pickups in NYC')
 # connection_parameters = {
-#     "account": "dh04284.ap-southeast-1",
+#     "account": st.secrets["snowflake"]["account"],
 #     "user": "SNOWMINDS",
 #     "password": "TeamSF@2022",
 #     "role": "FIN_DEVELOPER",
