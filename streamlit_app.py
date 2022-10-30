@@ -97,7 +97,7 @@ with st.container():
         st.write("No Data Found")
     else:
         d = alt.Chart(df).mark_bar().encode(x='BANK', y='TOTAL_AMOUNT', tooltip=['BANK', 'TOTAL_AMOUNT'],
-                                            color=alt.value('#3498db')).properties(height=400, width=1024)
+                                            color=alt.value('#3498db')).properties(height=400, width=1200)
         st.altair_chart(d)
 
 with st.container():
