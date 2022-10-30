@@ -6,18 +6,28 @@ import pandas as pd
 #from numerize import numerize
 
 
-st.title('Uber pickups in NYC')
-connection_parameters = {
-    "account": "dh04284.ap-southeast-1",
-    "user": "SNOWMINDS",
-    "password": "TeamSF@2022",
-    "role": "FIN_DEVELOPER",
-    "warehouse": "VWH_FIN_TRS",
-    "database": "D_FIN_LND",
-    "schema": "FIN_WBG"
-}
+# Initialize connection.
+# Uses st.experimental_singleton to only run once.
+@st.experimental_singleton
+def init_connection():
+    return snowflake.connector.connect(
+        **st.secrets["snowflake"], client_session_keep_alive=True
+    )
 
-test_session = Session.builder.configs(connection_parameters).create()
+conn = init_connection()
+
+st.title('Uber pickups in NYC')
+# connection_parameters = {
+#     "account": "dh04284.ap-southeast-1",
+#     "user": "SNOWMINDS",
+#     "password": "TeamSF@2022",
+#     "role": "FIN_DEVELOPER",
+#     "warehouse": "VWH_FIN_TRS",
+#     "database": "D_FIN_LND",
+#     "schema": "FIN_WBG"
+# }
+
+test_session = Session.builder.configs(conn).create()
 df_table = test_session.sql("SELECT  TYPE_TRAN,SUM(AMOUNT) AS AMOUNT_IN_MILLION from D_FIN_STG.FIN_STG.TRANS_DTA group by 1 ").collect()
 df = pd.DataFrame(df_table)
 print(df)
