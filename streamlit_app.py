@@ -3,14 +3,6 @@ import pandas as pd
 from snowflake.snowpark import Session
 
 
-st.write("My cool account:", st.secrets["snowflake"]["account"])
-st.write("My cool user:", st.secrets["snowflake"]["user"])
-st.write("My cool password:", st.secrets["snowflake"]["password"])
-st.write("My cool role:", st.secrets["snowflake"]["role"])
-st.write("My cool warehouse:", st.secrets["snowflake"]["warehouse"])
-st.write("My cool database:", st.secrets["snowflake"]["database"])
-st.write("My cool schema:", st.secrets["snowflake"]["schema"])
-
 st.title('Uber pickups in NYC')
 connection_parameters = {
     "account": st.secrets["snowflake"]["account"],
