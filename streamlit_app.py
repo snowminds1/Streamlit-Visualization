@@ -122,7 +122,7 @@ with st.container():
             d = alt.Chart(df3).mark_bar().encode(
                 x='TYPE_TRAN:O',
                 y="AMOUNT_IN_MILLION:Q",tooltip=['AMOUNT_IN_MILLION'],color=alt.value('#3498db')
-            ).properties(height=450, width=500)
+            ).properties(height=300, width=500)
             st.altair_chart(d)
             #st.bar_chart(data=df3, x="TYPE_TRAN", y="AMOUNT_IN_MILLION", width=500, height=0, use_container_width=True)
 
@@ -153,7 +153,7 @@ with st.container():
         if df.empty:
             st.write("No Data Found")
         else:
-            d= alt.Chart(df).mark_bar().encode(x='TOTAL_AMOUNT:Q',y="RECEIVER:O",tooltip=['RECEIVER','TOTAL_AMOUNT'],color=alt.value('#3498db')).properties(height=450,width=500)
+            d= alt.Chart(df).mark_bar().encode(x='TOTAL_AMOUNT:Q',y="RECEIVER:O",tooltip=['RECEIVER','TOTAL_AMOUNT'],color=alt.value('#3498db')).properties(height=300,width=500)
             st.altair_chart(d)
 
 with st.container():
