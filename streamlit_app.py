@@ -55,6 +55,52 @@ with st.sidebar:
     payment_type_select = st.selectbox('Payment Type', df1['TYPE_TRAN'], key='select2')
 
 with st.container():
+    st.subheader("Distribution by Banks")
+    if sender_select == 'All' and payment_type_select == 'All':
+        if from_dt == datetime.date.today() and to_dt == datetime.date.today():
+            df_table3 = test_session.sql(
+                "select CASE WHEN bank IS NULL THEN 'OTHERS' ELSE BANK END AS BANK,sum(amount) as TOTAL_AMOUNT from D_FIN_STG.FIN_STG.TRANS_DTA group by 1 order by 1").collect()
+        else:
+            df_table3 = test_session.sql(
+                "select CASE WHEN bank IS NULL THEN 'OTHERS' ELSE BANK END AS BANK,sum(amount) as TOTAL_AMOUNT from D_FIN_STG.FIN_STG.TRANS_DTA WHERE TRANS_DATE::DATE between '" + str(
+                    from_dt) + "' and '" + str(to_dt) + "' group by 1 order by 1").collect()
+    elif sender_select != 'All' and payment_type_select == 'All':
+        if from_dt == datetime.date.today() and to_dt == datetime.date.today():
+            df_table3 = test_session.sql(
+                "select CASE WHEN bank IS NULL THEN 'OTHERS' ELSE BANK END AS BANK,sum(amount) as TOTAL_AMOUNT from D_FIN_STG.FIN_STG.TRANS_DTA where sender= '" + sender_select + "' group by 1 order by 1").collect()
+        else:
+            df_table3 = test_session.sql(
+                "select CASE WHEN bank IS NULL THEN 'OTHERS' ELSE BANK END AS BANK,sum(amount) as TOTAL_AMOUNT from D_FIN_STG.FIN_STG.TRANS_DTA WHERE TRANS_DATE::DATE between '" + str(
+                    from_dt) + "' and '" + str(
+                    to_dt) + "' and sender= '" + sender_select + "' group by 1 order by 1").collect()
+    elif sender_select == 'All' and payment_type_select != 'All':
+        if from_dt == datetime.date.today() and to_dt == datetime.date.today():
+            df_table3 = test_session.sql(
+                "select CASE WHEN bank IS NULL THEN 'OTHERS' ELSE BANK END AS BANK,sum(amount) as TOTAL_AMOUNT from D_FIN_STG.FIN_STG.TRANS_DTA  where TYPE_TRAN= '" + payment_type_select + "' group by 1 order by 1").collect()
+        else:
+            df_table3 = test_session.sql(
+                "select CASE WHEN bank IS NULL THEN 'OTHERS' ELSE BANK END AS BANK,sum(amount) as TOTAL_AMOUNT from D_FIN_STG.FIN_STG.TRANS_DTA WHERE TRANS_DATE::DATE between '" + str(
+                    from_dt) + "' and '" + str(
+                    to_dt) + "' and TYPE_TRAN= '" + payment_type_select + "' group by 1 order by 1").collect()
+    elif sender_select != 'All' and payment_type_select != 'All':
+        if from_dt == datetime.date.today() and to_dt == datetime.date.today():
+            df_table3 = test_session.sql(
+                "select CASE WHEN bank IS NULL THEN 'OTHERS' ELSE BANK END AS BANK,sum(amount) as TOTAL_AMOUNT from D_FIN_STG.FIN_STG.TRANS_DTA  where TYPE_TRAN= '" + payment_type_select + "' and sender= '" + sender_select + "' group by 1 order by 1").collect()
+        else:
+            df_table3 = test_session.sql(
+                "select CASE WHEN bank IS NULL THEN 'OTHERS' ELSE BANK END AS BANK,sum(amount) as TOTAL_AMOUNT from D_FIN_STG.FIN_STG.TRANS_DTA WHERE TRANS_DATE::DATE between '" + str(
+                    from_dt) + "' and '" + str(
+                    to_dt) + "' and TYPE_TRAN= '" + payment_type_select + "'  and sender= '" + sender_select + "' group by 1 order by 1").collect()
+
+    df = pd.DataFrame(df_table3)
+    if df.empty:
+        st.write("No Data Found")
+    else:
+        d = alt.Chart(df).mark_bar().encode(x='BANK', y='TOTAL_AMOUNT', tooltip=['BANK', 'TOTAL_AMOUNT'],
+                                            color=alt.value('#3498db')).properties(height=400, width=600)
+        st.altair_chart(d)
+
+with st.container():
    st.columns(4)
    col1,col2,col3,col4 = st.columns(4)
 
@@ -190,33 +236,33 @@ with st.container():
             d = alt.Chart(df).mark_bar().encode(x='TOTAL_AMOUNT:Q',y="SENDER:O", tooltip=['SENDER', 'TOTAL_AMOUNT'], color=alt.value('#3498db')).properties(height=500, width=500)
             st.altair_chart(d)
 
-    with col2:
-        st.subheader("Distribution by Banks")
-        if sender_select == 'All' and payment_type_select == 'All':
-            if from_dt == datetime.date.today() and to_dt == datetime.date.today():
-                df_table3 = test_session.sql("select CASE WHEN bank IS NULL THEN 'OTHERS' ELSE BANK END AS BANK,sum(amount) as TOTAL_AMOUNT from D_FIN_STG.FIN_STG.TRANS_DTA group by 1 order by 1").collect()
-            else:
-                df_table3 = test_session.sql("select CASE WHEN bank IS NULL THEN 'OTHERS' ELSE BANK END AS BANK,sum(amount) as TOTAL_AMOUNT from D_FIN_STG.FIN_STG.TRANS_DTA WHERE TRANS_DATE::DATE between '" +str(from_dt)+ "' and '"+str(to_dt)+ "' group by 1 order by 1").collect()
-        elif sender_select!='All' and payment_type_select=='All':
-            if from_dt == datetime.date.today() and to_dt == datetime.date.today():
-                df_table3 = test_session.sql("select CASE WHEN bank IS NULL THEN 'OTHERS' ELSE BANK END AS BANK,sum(amount) as TOTAL_AMOUNT from D_FIN_STG.FIN_STG.TRANS_DTA where sender= '" + sender_select + "' group by 1 order by 1").collect()
-            else:
-                df_table3 = test_session.sql("select CASE WHEN bank IS NULL THEN 'OTHERS' ELSE BANK END AS BANK,sum(amount) as TOTAL_AMOUNT from D_FIN_STG.FIN_STG.TRANS_DTA WHERE TRANS_DATE::DATE between '" +str(from_dt)+ "' and '"+str(to_dt)+ "' and sender= '" + sender_select + "' group by 1 order by 1").collect()
-        elif sender_select=='All' and payment_type_select!='All':
-            if from_dt == datetime.date.today() and to_dt == datetime.date.today():
-                df_table3 = test_session.sql("select CASE WHEN bank IS NULL THEN 'OTHERS' ELSE BANK END AS BANK,sum(amount) as TOTAL_AMOUNT from D_FIN_STG.FIN_STG.TRANS_DTA  where TYPE_TRAN= '" + payment_type_select + "' group by 1 order by 1").collect()
-            else:
-                df_table3 = test_session.sql("select CASE WHEN bank IS NULL THEN 'OTHERS' ELSE BANK END AS BANK,sum(amount) as TOTAL_AMOUNT from D_FIN_STG.FIN_STG.TRANS_DTA WHERE TRANS_DATE::DATE between '" +str(from_dt)+ "' and '"+str(to_dt)+ "' and TYPE_TRAN= '" + payment_type_select + "' group by 1 order by 1").collect()
-        elif sender_select!='All' and payment_type_select!='All':
-            if from_dt == datetime.date.today() and to_dt == datetime.date.today():
-                df_table3 = test_session.sql("select CASE WHEN bank IS NULL THEN 'OTHERS' ELSE BANK END AS BANK,sum(amount) as TOTAL_AMOUNT from D_FIN_STG.FIN_STG.TRANS_DTA  where TYPE_TRAN= '" + payment_type_select + "' and sender= '" + sender_select + "' group by 1 order by 1").collect()
-            else:
-                df_table3 = test_session.sql("select CASE WHEN bank IS NULL THEN 'OTHERS' ELSE BANK END AS BANK,sum(amount) as TOTAL_AMOUNT from D_FIN_STG.FIN_STG.TRANS_DTA WHERE TRANS_DATE::DATE between '" +str(from_dt)+ "' and '"+str(to_dt)+ "' and TYPE_TRAN= '" + payment_type_select + "'  and sender= '" + sender_select + "' group by 1 order by 1").collect()
-
-        df = pd.DataFrame(df_table3)
-        if df.empty:
-            st.write("No Data Found")
-        else:
-            d = alt.Chart(df).mark_bar().encode(x='BANK',y='TOTAL_AMOUNT',tooltip=['BANK', 'TOTAL_AMOUNT'], color=alt.value('#3498db')).properties(height=400, width=600)
-            st.altair_chart(d)
+    # with col2:
+    #     st.subheader("Distribution by Banks")
+    #     if sender_select == 'All' and payment_type_select == 'All':
+    #         if from_dt == datetime.date.today() and to_dt == datetime.date.today():
+    #             df_table3 = test_session.sql("select CASE WHEN bank IS NULL THEN 'OTHERS' ELSE BANK END AS BANK,sum(amount) as TOTAL_AMOUNT from D_FIN_STG.FIN_STG.TRANS_DTA group by 1 order by 1").collect()
+    #         else:
+    #             df_table3 = test_session.sql("select CASE WHEN bank IS NULL THEN 'OTHERS' ELSE BANK END AS BANK,sum(amount) as TOTAL_AMOUNT from D_FIN_STG.FIN_STG.TRANS_DTA WHERE TRANS_DATE::DATE between '" +str(from_dt)+ "' and '"+str(to_dt)+ "' group by 1 order by 1").collect()
+    #     elif sender_select!='All' and payment_type_select=='All':
+    #         if from_dt == datetime.date.today() and to_dt == datetime.date.today():
+    #             df_table3 = test_session.sql("select CASE WHEN bank IS NULL THEN 'OTHERS' ELSE BANK END AS BANK,sum(amount) as TOTAL_AMOUNT from D_FIN_STG.FIN_STG.TRANS_DTA where sender= '" + sender_select + "' group by 1 order by 1").collect()
+    #         else:
+    #             df_table3 = test_session.sql("select CASE WHEN bank IS NULL THEN 'OTHERS' ELSE BANK END AS BANK,sum(amount) as TOTAL_AMOUNT from D_FIN_STG.FIN_STG.TRANS_DTA WHERE TRANS_DATE::DATE between '" +str(from_dt)+ "' and '"+str(to_dt)+ "' and sender= '" + sender_select + "' group by 1 order by 1").collect()
+    #     elif sender_select=='All' and payment_type_select!='All':
+    #         if from_dt == datetime.date.today() and to_dt == datetime.date.today():
+    #             df_table3 = test_session.sql("select CASE WHEN bank IS NULL THEN 'OTHERS' ELSE BANK END AS BANK,sum(amount) as TOTAL_AMOUNT from D_FIN_STG.FIN_STG.TRANS_DTA  where TYPE_TRAN= '" + payment_type_select + "' group by 1 order by 1").collect()
+    #         else:
+    #             df_table3 = test_session.sql("select CASE WHEN bank IS NULL THEN 'OTHERS' ELSE BANK END AS BANK,sum(amount) as TOTAL_AMOUNT from D_FIN_STG.FIN_STG.TRANS_DTA WHERE TRANS_DATE::DATE between '" +str(from_dt)+ "' and '"+str(to_dt)+ "' and TYPE_TRAN= '" + payment_type_select + "' group by 1 order by 1").collect()
+    #     elif sender_select!='All' and payment_type_select!='All':
+    #         if from_dt == datetime.date.today() and to_dt == datetime.date.today():
+    #             df_table3 = test_session.sql("select CASE WHEN bank IS NULL THEN 'OTHERS' ELSE BANK END AS BANK,sum(amount) as TOTAL_AMOUNT from D_FIN_STG.FIN_STG.TRANS_DTA  where TYPE_TRAN= '" + payment_type_select + "' and sender= '" + sender_select + "' group by 1 order by 1").collect()
+    #         else:
+    #             df_table3 = test_session.sql("select CASE WHEN bank IS NULL THEN 'OTHERS' ELSE BANK END AS BANK,sum(amount) as TOTAL_AMOUNT from D_FIN_STG.FIN_STG.TRANS_DTA WHERE TRANS_DATE::DATE between '" +str(from_dt)+ "' and '"+str(to_dt)+ "' and TYPE_TRAN= '" + payment_type_select + "'  and sender= '" + sender_select + "' group by 1 order by 1").collect()
+    #
+    #     df = pd.DataFrame(df_table3)
+    #     if df.empty:
+    #         st.write("No Data Found")
+    #     else:
+    #         d = alt.Chart(df).mark_bar().encode(x='BANK',y='TOTAL_AMOUNT',tooltip=['BANK', 'TOTAL_AMOUNT'], color=alt.value('#3498db')).properties(height=400, width=600)
+    #         st.altair_chart(d)
         #st.bar_chart(data=df, x="BANK", y="TOTAL_AMOUNT", height=450, use_container_width=True)
