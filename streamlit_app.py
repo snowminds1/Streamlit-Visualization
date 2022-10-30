@@ -97,7 +97,7 @@ with st.container():
         st.write("No Data Found")
     else:
         d = alt.Chart(df).mark_bar().encode(x='BANK', y='TOTAL_AMOUNT', tooltip=['BANK', 'TOTAL_AMOUNT'],
-                                            color=alt.value('#3498db')).properties(height=400, width=1000)
+                                            color=alt.value('#3498db')).properties(height=400, width=1024)
         st.altair_chart(d)
 
 with st.container():
@@ -263,6 +263,6 @@ with st.container():
     #     if df.empty:
     #         st.write("No Data Found")
     #     else:
-    #         d = alt.Chart(df).mark_bar().encode(x='BANK',y='TOTAL_AMOUNT',tooltip=['BANK', 'TOTAL_AMOUNT'], color=alt.value('#3498db')).properties(height=400, width=600)
+    #         d = alt.Chart(df).mark_bar().encode(x='BANK',y='TOTAL_AMOUNT',tooltip=['BANK', 'TOTAL_AMOUNT'], color=alt.value('#3498db')).properties(height=300, width=500)
     #         st.altair_chart(d)
         #st.bar_chart(data=df, x="BANK", y="TOTAL_AMOUNT", height=450, use_container_width=True)
