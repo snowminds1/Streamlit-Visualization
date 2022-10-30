@@ -233,7 +233,7 @@ with st.container():
         if df.empty:
             st.write("No Data Found")
         else:
-            d = alt.Chart(df).mark_bar().encode(x='TOTAL_AMOUNT:Q',y="SENDER:O", tooltip=['SENDER', 'TOTAL_AMOUNT'], color=alt.value('#3498db')).properties(height=500, width=500)
+            d = alt.Chart(df).mark_bar().encode(x='TOTAL_AMOUNT:Q',y="SENDER:O", tooltip=['SENDER', 'TOTAL_AMOUNT'], color=alt.value('#3498db')).properties(height=300, width=500)
             st.altair_chart(d)
 
     # with col2:
