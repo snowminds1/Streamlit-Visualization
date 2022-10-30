@@ -21,7 +21,7 @@ connection_parameters = {
     "schema": st.secrets["snowflake"]["schema"],
 }
 
-# test_session = Session.builder.configs(connection_parameters).create()
-# df_table = test_session.sql("SELECT  TYPE_TRAN,SUM(AMOUNT) AS AMOUNT_IN_MILLION from D_FIN_STG.FIN_STG.TRANS_DTA group by 1 ").collect()
-# df = pd.DataFrame(df_table)
-# print(df)
+test_session = Session.builder.configs(connection_parameters).create()
+df_table = test_session.sql("SELECT  TYPE_TRAN,SUM(AMOUNT) AS AMOUNT_IN_MILLION from D_FIN_STG.FIN_STG.TRANS_DTA group by 1 ").collect()
+df = pd.DataFrame(df_table)
+print(df)
