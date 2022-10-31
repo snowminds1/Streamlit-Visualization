@@ -35,12 +35,12 @@ with st.sidebar:
     from_dt = st.date_input(
         "From Date",
         datetime.date(year,1,1))
-    st.write('From Date:', from_dt)
+    #st.write('From Date:', from_dt)
 
     to_dt = st.date_input(
         "To Date",
         datetime.date.today())
-    st.write('To Date :', to_dt)
+    #st.write('To Date :', to_dt)
 
     df_table1 = test_session.sql("SELECT SENDER from D_FIN_STG.FIN_STG.TRANS_DTA group by 1 ").collect()
     df1 = pd.DataFrame(df_table1)
