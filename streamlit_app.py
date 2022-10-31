@@ -201,7 +201,7 @@ with st.container():
         else:
             #d= alt.Chart(df).mark_bar().encode(x='TOTAL_AMOUNT:Q',y="RECEIVER:O",tooltip=['RECEIVER','TOTAL_AMOUNT'],color=alt.value('#3498db')).properties(height=200,width=500)
             #st.altair_chart(d)
-            d=alt.Chart(df).mark_arc().encode(theta=alt.Theta(field="TOTAL_AMOUNT", type="quantitative"),color=alt.Color(field="RECEIVER", type="nominal"),tooltip=['RECEIVER','TOTAL_AMOUNT'],).properties(height=200, width=500)
+            d=alt.Chart(df).mark_arc().encode(theta=alt.Theta(field="TOTAL_AMOUNT", type="quantitative"),color=alt.Color(field="RECEIVER", type="nominal"),tooltip=['RECEIVER','TOTAL_AMOUNT'],).properties(height=250, width=500)
             st.altair_chart(d)
 
 with st.container():
