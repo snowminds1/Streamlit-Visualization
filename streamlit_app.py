@@ -5,7 +5,7 @@ import datetime
 import altair as alt
 
 st.set_page_config(layout="wide")
-st.title('Money in Motion Dashboard')
+st.title('Money in Motion Dashboard - Pattern Analysis')
 connection_parameters = {
     "account": st.secrets["snowflake"]["account"],
     "user": st.secrets["snowflake"]["user"],
