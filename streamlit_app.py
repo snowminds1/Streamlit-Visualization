@@ -107,21 +107,26 @@ with st.container():
                                                       color=alt.Color(field="TYPE_TRAN", type="nominal"), tooltip=['TYPE_TRAN','AMOUNT_IN_MILLION','TXN_COUNT'])
             st.altair_chart(d)
 
-   # with col2:
-   #      st.subheader("Top 5 Receivers")
-   #      df_table3 = test_session.sql(
-   #          "select Top 5 RECEIVER,TOTAL_AMOUNT from(select RECEIVER,TYPE_TRAN,SUM(AMOUNT)  as TOTAL_AMOUNT from D_FIN_STG.FIN_STG.TRANS_DTA where (TYPE_TRAN= '" + payment_type_select + "' or '" + payment_type_select + "' ='All') and (SENDER= '" + sender_select + "' or '" + sender_select + "' ='All') and  TRANS_DATE::DATE between '" + str(
-   #              from_dt) + "' and '" + str(
-   #              to_dt) + "' group by 1,2 order by Total_Amount desc)order by Total_Amount desc").collect()
-   #      df = pd.DataFrame(df_table3)
-   #      if df.empty:
-   #          st.write("No Data Found")
-   #      else:
-   #          d= alt.Chart(df).mark_bar().encode(x='TOTAL_AMOUNT:Q',y="RECEIVER:O",tooltip=['RECEIVER','TOTAL_AMOUNT'],color=alt.value('#3498db')).properties(height=450,width=725)
-   #          st.altair_chart(d)
+   with col2:
+        st.subheader("Transactions Count")
+        df_table3 = test_session.sql(
+            "SELECT  COUNT(TYPE_TRAN) AS TXN_COUNT, DAY(TRANS_DATE::DATE) AS TRANS_DATE,DAY(TRANS_DATE::DATE)||'/'||MONTH(TRANS_DATE::DATE) AS TRANS_DAT from D_FIN_STG.FIN_STG.TRANS_DTA where (TYPE_TRAN= '" + payment_type_select + "' or '" + payment_type_select + "' ='All') and (SENDER= '" + sender_select + "' or '" + sender_select + "' ='All') and (RECEIVER= '" + receiver_select + "' or '"+ receiver_select +"' ='All') and (BANK= '" + bank_select + "' or '"+ bank_select +"' ='All') and   TRANS_DATE::DATE between '" + str(
+                from_dt) + "' and '" + str(to_dt) + "' group by 2,3 ").collect()
+        df = pd.DataFrame(df_table3)
+        if df.empty:
+            st.write("No Data Found")
+        else:
+            # d= alt.Chart(df).mark_bar().encode(x='TOTAL_AMOUNT:Q',y="RECEIVER:O",tooltip=['RECEIVER','TOTAL_AMOUNT'],color=alt.value('#3498db')).properties(height=450,width=725)
+            # st.altair_chart(d)
             # d = alt.Chart(df).mark_arc(innerRadius=50).encode(theta=alt.Theta(field="TOTAL_AMOUNT", type="quantitative"),
             #                                               color=alt.Color(field="RECEIVER", type="nominal"), )
             # st.altair_chart(d)
+            d = alt.Chart(df).mark_rect().encode(
+                alt.X('TRANS_DATE:Q', bin=alt.Bin(maxbins=30)),
+                alt.Y('TXN_COUNT:Q', bin=alt.Bin(maxbins=30)),
+                alt.Color('TXN_COUNT:Q', scale=alt.Scale(scheme='greenblue')),tooltip=['TRANS_DAT','TXN_COUNT']
+                    )
+            st.altair_chart(d)
 
 with st.container():
     st.columns(3,gap="small")
