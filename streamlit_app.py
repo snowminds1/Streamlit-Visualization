@@ -30,9 +30,11 @@ df = pd.DataFrame(df_table)
 # "with" notation
 with st.sidebar:
     st.write("Custom Filters")
+    today = datetime.date.today()
+    year = today.year
     from_dt = st.date_input(
         "From Date",
-        datetime.date.today()-datetime.timedelta(days=90))
+        datetime.date(year,1,1))
     st.write('From Date:', from_dt)
 
     to_dt = st.date_input(
