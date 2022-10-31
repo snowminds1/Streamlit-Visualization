@@ -169,7 +169,7 @@ with st.container():
         else:
             # d = alt.Chart(df).mark_bar().encode(x='TOTAL_AMOUNT:Q', y="BANK:O",
             #                                     tooltip=['BANK', 'TOTAL_AMOUNT'],
-            #                                     color=alt.value('#3498db')).properties(height=200, width=400)
+            #                                     color=alt.value('#3498db')).properties(height=200, width=350)
             d = alt.Chart(df).mark_bar().encode(
                 x='BANK',
                 y='TXN_COUNT',
