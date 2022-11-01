@@ -208,6 +208,23 @@ with st.container():
         st.altair_chart(d)
 
 with st.container():
+    st.subheader("Distribution by Banks")
+    df_table3 = test_session.sql(
+                "select CASE WHEN bank IS NULL THEN 'OTHERS' ELSE BANK END AS BANK,sum(amount) as TOTAL_AMOUNT,sum(amount) as TXN_AMOUNT,count(TYPE_TRAN) as TXN_COUNT from D_FIN_STG.FIN_STG.TRANS_DTA "
+                "WHERE TRANS_DATE::DATE between '" + str(
+                    from_dt) + "' and '" + str(
+                    to_dt) + "' and (TYPE_TRAN= '" + payment_type_select + "' or '"+ payment_type_select +"' ='All') and (SENDER= '" + sender_select + "' or '"+ sender_select +"' ='All') and (RECEIVER= '" + receiver_select + "' or '"+ receiver_select +"' ='All') and (BANK= '" + bank_select + "' or '"+ bank_select +"' ='All') group by 1 order by 1").collect()
+    df = pd.DataFrame(df_table3)
+
+    if df.empty:
+        st.write("No Data Found")
+    else:
+        for ind in df.index:
+            df['TXN_AMOUNT'][ind] = currency + "" + numerize.numerize(float(df['TXN_AMOUNT'][ind]))
+        d = alt.Chart(df).mark_bar().encode(x='BANK', y='TOTAL_AMOUNT', tooltip=['BANK', 'TXN_AMOUNT','TXN_COUNT'],color=alt.value('#3498db')).properties(height=450, width=1100)
+        st.altair_chart(d)
+        
+with st.container():
     st.subheader("YoY Comparison")
 
     df_table3 = test_session.sql("select BANK,YEAR(TRANS_DATE::DATE) AS YEAR,sum(amount) AS TOTAL_AMOUNT,sum(amount) AS TXN_AMOUNT from D_FIN_STG.FIN_STG.TRANS_DTA where YEAR(TRANS_DATE::DATE)= YEAR('"+str(from_dt)+"'::DATE)  and BANK in(Select BANK from(select Top 5 BANK,TYPE_TRAN,TOTAL_AMOUNT from(select BANK,TYPE_TRAN,SUM(AMOUNT)  as TOTAL_AMOUNT from D_FIN_STG.FIN_STG.TRANS_DTA where (TYPE_TRAN= '" + payment_type_select + "' or '" + payment_type_select + "' ='All') and (SENDER= '" + sender_select + "' or '" + sender_select + "' ='All') and (RECEIVER= '" + receiver_select + "' or '"+ receiver_select +"' ='All') and (BANK= '" + bank_select + "' or '"+ bank_select +"' ='All') and  YEAR(TRANS_DATE::DATE)= YEAR('"+str(from_dt)+"'::DATE) group by 1,2 order by Total_Amount desc)order by Total_Amount desc)group by 1) group by 1,2 UNION select BANK,YEAR(TRANS_DATE::DATE) AS YEAR,sum(amount)  AS TOTAL_AMOUNT, sum(amount) AS TXN_AMOUNT from D_FIN_STG.FIN_STG.TRANS_DTA where YEAR(TRANS_DATE::DATE)= YEAR('"+str(from_dt)+"'::DATE)-1  and BANK in(Select BANK from(select Top 5 BANK,TYPE_TRAN,TOTAL_AMOUNT from(select BANK,TYPE_TRAN,SUM(AMOUNT)  as TOTAL_AMOUNT from D_FIN_STG.FIN_STG.TRANS_DTA where (TYPE_TRAN= '" + payment_type_select + "' or '" + payment_type_select + "' ='All') and (SENDER= '" + sender_select + "' or '" + sender_select + "' ='All') and (RECEIVER= '" + receiver_select + "' or '"+ receiver_select +"' ='All') and (BANK= '" + bank_select + "' or '"+ bank_select +"' ='All') and YEAR(TRANS_DATE::DATE)= YEAR('"+str(from_dt)+"'::DATE) group by 1,2 order by Total_Amount desc)order by Total_Amount desc)group by 1)group by 1,2").collect()
@@ -226,20 +243,5 @@ with st.container():
         ).properties(height=450, width=200)
         st.altair_chart(d)
 
-with st.container():
-    st.subheader("Distribution by Banks")
-    df_table3 = test_session.sql(
-                "select CASE WHEN bank IS NULL THEN 'OTHERS' ELSE BANK END AS BANK,sum(amount) as TOTAL_AMOUNT,sum(amount) as TXN_AMOUNT,count(TYPE_TRAN) as TXN_COUNT from D_FIN_STG.FIN_STG.TRANS_DTA "
-                "WHERE TRANS_DATE::DATE between '" + str(
-                    from_dt) + "' and '" + str(
-                    to_dt) + "' and (TYPE_TRAN= '" + payment_type_select + "' or '"+ payment_type_select +"' ='All') and (SENDER= '" + sender_select + "' or '"+ sender_select +"' ='All') and (RECEIVER= '" + receiver_select + "' or '"+ receiver_select +"' ='All') and (BANK= '" + bank_select + "' or '"+ bank_select +"' ='All') group by 1 order by 1").collect()
-    df = pd.DataFrame(df_table3)
 
-    if df.empty:
-        st.write("No Data Found")
-    else:
-        for ind in df.index:
-            df['TXN_AMOUNT'][ind] = currency + "" + numerize.numerize(float(df['TXN_AMOUNT'][ind]))
-        d = alt.Chart(df).mark_bar().encode(x='BANK', y='TOTAL_AMOUNT', tooltip=['BANK', 'TXN_AMOUNT','TXN_COUNT'],color=alt.value('#3498db')).properties(height=450, width=1100)
-        st.altair_chart(d)
 
