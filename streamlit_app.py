@@ -25,6 +25,7 @@ bank_select = ''
 receiver_select =''
 from_dt = datetime.date.today()
 to_dt = datetime.date.today()
+currency = str(u'\u20B9')
 
 with st.container():
        st.title('Money in Motion Dashboard - Pattern Analysis')
